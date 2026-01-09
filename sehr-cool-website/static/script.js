@@ -8,17 +8,14 @@ document.addEventListener("DOMContentLoaded", () => {
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
-                // Element enters viewport: Play animation
                 entry.target.classList.add("active");
             } else {
-                // Element leaves viewport: Reset animation
-                // This allows it to play again when scrolling back
                 entry.target.classList.remove("active");
             }
         });
     }, {
-        threshold: 0.1, // Trigger when 10% visible
-        rootMargin: "0px 0px -50px 0px" // Offset slightly so it doesn't trigger too early
+        threshold: 0.1,
+        rootMargin: "0px 0px -50px 0px"
     });
 
     reveals.forEach(el => observer.observe(el));
@@ -64,7 +61,7 @@ document.addEventListener("DOMContentLoaded", () => {
             features: ["Inability to process galactose (sugar in milk)", "Toxic accumulation causing organ damage"],
             symptoms: ["Jaundice", "Vomiting", "Poor weight gain", "Lethargy"]
         },
-        "Wilson’s Disease": {
+        "Wilson's Disease": {
             inheritance: "Autosomal Recessive",
             features: ["Accumulation of copper in liver and brain", "Defect in copper transport"],
             symptoms: ["Tremors", "Difficulty speaking", "Abdominal pain", "Golden-brown eye ring"]
@@ -152,7 +149,7 @@ document.addEventListener("DOMContentLoaded", () => {
         },
 
         // --- MITOCHONDRIAL ---
-        "Leber’s Hereditary Optic Neuropathy": {
+        "Leber's Hereditary Optic Neuropathy": {
             inheritance: "Mitochondrial",
             features: ["Maternally inherited", "Death of cells in the optic nerve"],
             symptoms: ["Sudden vision loss", "Blurring of central vision", "Tremors"]
@@ -186,7 +183,6 @@ document.addEventListener("DOMContentLoaded", () => {
             const data = diseaseDatabase[selectedDisease];
 
             if (data) {
-                // Populate Data
                 diseaseTitle.textContent = selectedDisease;
                 inheritanceTag.textContent = data.inheritance;
                 
@@ -204,15 +200,12 @@ document.addEventListener("DOMContentLoaded", () => {
                     symptomsList.appendChild(li);
                 });
 
-                // REVEAL LOGIC
                 overviewSection.classList.remove("hidden-section");
                 
-                // Trigger Reflow to restart staggered animation if already visible
                 overviewSection.classList.remove("active-overview");
                 void overviewSection.offsetWidth; 
                 overviewSection.classList.add("active-overview");
 
-                // Smooth Scroll
                 overviewSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }
         });
@@ -246,26 +239,82 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
 });
+
+/* =========================
+   5. CALCULATE RISK BUTTON - READS ACTUAL FORM VALUES
+========================= */
 document.getElementById("calculateBtn").addEventListener("click", () => {
-
+    // Helper function to get person data from a card
+    function getPersonData(personCard, defaultSex) {
+        const statusSelect = personCard.querySelector("select[data-status]");
+        const carrierSelect = personCard.querySelector(".conditional select");
+        
+        const status = statusSelect.value;
+        const affected = status === "Affected";
+        
+        let carrier_status = "unknown";
+        if (status === "Affected") {
+            carrier_status = "known_carrier";
+        } else if (status === "Non-affected" && carrierSelect) {
+            const carrierValue = carrierSelect.value;
+            if (carrierValue === "Yes") carrier_status = "known_carrier";
+            else if (carrierValue === "No") carrier_status = "known_non_carrier";
+            else carrier_status = "unknown";
+        }
+        
+        return {
+            sex: defaultSex,
+            affected: affected,
+            carrier_status: carrier_status
+        };
+    }
+    
+    // Get all person cards in order
+    const grandparentCards = document.querySelectorAll(".side-by-side .notebook:first-child .person-card");
+    const parentCards = document.querySelectorAll(".side-by-side .notebook:last-child .person-card");
+    
+    // Build grandparents array [Pat GF, Pat GM, Mat GF, Mat GM]
+    const grandparents = [
+        getPersonData(grandparentCards[0], "M"), // Paternal Grandfather
+        getPersonData(grandparentCards[1], "F"), // Paternal Grandmother
+        getPersonData(grandparentCards[2], "M"), // Maternal Grandfather
+        getPersonData(grandparentCards[3], "F")  // Maternal Grandmother
+    ];
+    
+    // Build parents array [Father, Mother]
+    const parents = [
+        getPersonData(parentCards[0], "M"), // Father
+        getPersonData(parentCards[1], "F")  // Mother
+    ];
+    
+    // Get user sex and convert to backend format
+    const userSexSelect = document.getElementById("userSex");
+    const userSexValue = userSexSelect.value;
+    const userSex = userSexValue === "Male" ? "M" : "F";
+    
+    // Get selected disease
+    const disease = document.querySelector(".main-select").value;
+    
+    // Validate inputs
+    if (!disease || disease === "Select disease") {
+        alert("Please select a disease first!");
+        return;
+    }
+    
+    if (!userSexValue || userSexValue === "Select") {
+        alert("Please select your sex!");
+        return;
+    }
+    
     const payload = {
-        disease: document.querySelector(".main-select").value,
-
-        grandparents: [
-            { sex: "M", affected: false, carrier_status: "unknown" },
-            { sex: "F", affected: false, carrier_status: "unknown" },
-            { sex: "M", affected: false, carrier_status: "unknown" },
-            { sex: "F", affected: false, carrier_status: "unknown" }
-        ],
-
-        parents: [
-            { sex: "M", affected: false, carrier_status: "unknown" },
-            { sex: "F", affected: false, carrier_status: "unknown" }
-        ],
-
-        user_sex: document.getElementById("userSex").value
+        disease: disease,
+        grandparents: grandparents,
+        parents: parents,
+        user_sex: userSex
     };
-
+    
+    console.log("Sending payload:", payload); // Debug log
+    
     fetch("/calculate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -273,7 +322,13 @@ document.getElementById("calculateBtn").addEventListener("click", () => {
     })
     .then(res => res.json())
     .then(data => {
+        console.log("Received response:", data); // Debug log
         document.getElementById("riskText").innerHTML =
-            `Risk: <b>${data.risk * 100}%</b><br>${data.explanation}`;
+            `<strong>Risk: ${(data.risk * 100).toFixed(1)}%</strong><br>${data.explanation}`;
+    })
+    .catch(error => {
+        console.error("Error:", error);
+        document.getElementById("riskText").innerHTML =
+            `<strong style="color: #ef4444;">Error calculating risk. Please check console.</strong>`;
     });
 });
