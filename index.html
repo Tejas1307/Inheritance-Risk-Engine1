@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Genetic Risk & Pedigree Analyzer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<video autoplay muted loop playsinline id="bg-video">
+    <source src="background.mp4" type="video/mp4">
+    Your browser does not support the video tag.
+</video>
+
+<div class="video-overlay"></div>
+
+<header class="glass header reveal">
+    <h1 class="handwritten" style="color: #ffffff;">
+        Genetic Risk & Pedigree Analyzer
+    </h1>
+    <p class="subtitle" style="color: #e2e8f0;">
+        Educational Mendelian & Chromosomal Disease Risk Tool
+    </p>
+</header>
+
+<section class="glass card reveal">
+    <h2 class="handwritten">Select a Genetic Disease</h2>
+    <select class="main-select">
+        <option selected disabled>Select disease</option>
+        
+        <optgroup label="Autosomal Recessive">
+            <option value="Cystic Fibrosis">Cystic Fibrosis</option>
+            <option value="Sickle Cell Anemia">Sickle Cell Anemia</option>
+            <option value="Thalassemia">Thalassemia</option>
+            <option value="Tay-Sachs Disease">Tay-Sachs Disease</option>
+            <option value="Phenylketonuria (PKU)">Phenylketonuria (PKU)</option>
+            <option value="Spinal Muscular Atrophy">Spinal Muscular Atrophy</option>
+            <option value="Galactosemia">Galactosemia</option>
+            <option value="Wilson’s Disease">Wilson’s Disease</option>
+            <option value="Gilbert Syndrome">Gilbert Syndrome</option>
+        </optgroup>
+
+        <optgroup label="Autosomal Dominant">
+            <option value="Huntington Disease">Huntington Disease</option>
+            <option value="Marfan Syndrome">Marfan Syndrome</option>
+            <option value="Achondroplasia">Achondroplasia</option>
+            <option value="Neurofibromatosis Type 1">Neurofibromatosis Type 1</option>
+            <option value="ADPKD">Autosomal Dominant Polycystic Kidney Disease</option>
+            <option value="Familial Hypercholesterolemia">Familial Hypercholesterolemia</option>
+        </optgroup>
+
+        <optgroup label="X-Linked Recessive">
+            <option value="Hemophilia">Hemophilia</option>
+            <option value="Color Blindness">Color Blindness</option>
+            <option value="Duchenne Muscular Dystrophy">Duchenne Muscular Dystrophy</option>
+            <option value="Becker Muscular Dystrophy">Becker Muscular Dystrophy</option>
+            <option value="G6PD Deficiency">G6PD Deficiency</option>
+        </optgroup>
+
+        <optgroup label="X-Linked Dominant">
+            <option value="Rett Syndrome">Rett Syndrome</option>
+            <option value="Fragile X Syndrome">Fragile X Syndrome</option>
+            <option value="Hypophosphatemic Rickets">Hypophosphatemic Rickets</option>
+        </optgroup>
+
+        <optgroup label="Mitochondrial">
+            <option value="Leber’s Hereditary Optic Neuropathy">Leber’s Hereditary Optic Neuropathy</option>
+            <option value="MELAS Syndrome">MELAS Syndrome</option>
+            <option value="MERRF Syndrome">MERRF Syndrome</option>
+        </optgroup>
+    </select>
+</section>
+
+<section id="diseaseOverview" class="glass card hidden-section">
+    <h2 class="handwritten" id="diseaseTitle">Disease Overview</h2>
+
+    <div class="tag-container stagger-1">
+        <span id="inheritanceTag" class="inheritance-tag">Inheritance Pattern</span>
+    </div>
+
+    <div class="info-grid">
+        <div class="stagger-2">
+            <h4 style="color: #e2e8f0; border-bottom-color: rgba(255,255,255,0.3);">Characteristic Features</h4>
+            <ul id="featuresList"></ul>
+        </div>
+
+        <div class="stagger-3">
+            <h4 style="color: #e2e8f0; border-bottom-color: rgba(255,255,255,0.3);">Common Symptoms</h4>
+            <ul id="symptomsList"></ul>
+        </div>
+    </div>
+
+    <div class="image-placeholder stagger-4">
+        <div id="illustrationText">Representative medical illustration</div>
+    </div>
+</section>
+
+<section class="side-by-side">
+
+    <div class="glass card notebook reveal slide-right">
+        <h2 class="handwritten">Grandparents</h2>
+        <div class="grid-2">
+            <div class="person-card">
+                <h3>Paternal Grandfather</h3>
+                <label>Sex: Male</label>
+                <label>Status</label>
+                <select data-status>
+                    <option selected disabled>Select status</option>
+                    <option value="Affected">Affected</option>
+                    <option value="Non-affected">Non-affected</option>
+                    <option value="Unknown">Unknown</option>
+                </select>
+                <div class="conditional hidden">
+                    <label>Carrier Status</label>
+                    <select><option>Select</option><option value="Yes">Yes</option><option value="No">No</option><option value="Unknown">Unknown</option></select>
+                </div>
+            </div>
+
+            <div class="person-card">
+                <h3>Paternal Grandmother</h3>
+                <label>Sex: Female</label>
+                <label>Status</label>
+                <select data-status>
+                    <option selected disabled>Select status</option>
+                    <option value="Affected">Affected</option>
+                    <option value="Non-affected">Non-affected</option>
+                    <option value="Unknown">Unknown</option>
+                </select>
+                <div class="conditional hidden">
+                    <label>Carrier Status</label>
+                    <select><option>Select</option><option value="Yes">Yes</option><option value="No">No</option><option value="Unknown">Unknown</option></select>
+                </div>
+            </div>
+
+            <div class="person-card">
+                <h3>Maternal Grandfather</h3>
+                <label>Sex: Male</label>
+                <label>Status</label>
+                <select data-status>
+                    <option selected disabled>Select status</option>
+                    <option value="Affected">Affected</option>
+                    <option value="Non-affected">Non-affected</option>
+                    <option value="Unknown">Unknown</option>
+                </select>
+                <div class="conditional hidden">
+                    <label>Carrier Status</label>
+                    <select><option>Select</option><option value="Yes">Yes</option><option value="No">No</option><option value="Unknown">Unknown</option></select>
+                </div>
+            </div>
+
+            <div class="person-card">
+                <h3>Maternal Grandmother</h3>
+                <label>Sex: Female</label>
+                <label>Status</label>
+                <select data-status>
+                    <option selected disabled>Select status</option>
+                    <option value="Affected">Affected</option>
+                    <option value="Non-affected">Non-affected</option>
+                    <option value="Unknown">Unknown</option>
+                </select>
+                <div class="conditional hidden">
+                    <label>Carrier Status</label>
+                    <select><option>Select</option><option value="Yes">Yes</option><option value="No">No</option><option value="Unknown">Unknown</option></select>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="glass card notebook reveal slide-left parents-wide">
+        <h2 class="handwritten">Parents</h2>
+        <div class="grid-2">
+            <div class="person-card">
+                <h3>Father</h3>
+                <label>Sex: Male</label>
+                <label>Status</label>
+                <select data-status>
+                    <option selected disabled>Select status</option>
+                    <option value="Affected">Affected</option>
+                    <option value="Non-affected">Non-affected</option>
+                    <option value="Unknown">Unknown</option>
+                </select>
+                <div class="conditional hidden">
+                    <label>Carrier Status</label>
+                    <select><option>Select</option><option value="Yes">Yes</option><option value="No">No</option><option value="Unknown">Unknown</option></select>
+                </div>
+            </div>
+
+            <div class="person-card">
+                <h3>Mother</h3>
+                <label>Sex: Female</label>
+                <label>Status</label>
+                <select data-status>
+                    <option selected disabled>Select status</option>
+                    <option value="Affected">Affected</option>
+                    <option value="Non-affected">Non-affected</option>
+                    <option value="Unknown">Unknown</option>
+                </select>
+                <div class="conditional hidden">
+                    <label>Carrier Status</label>
+                    <select><option>Select</option><option value="Yes">Yes</option><option value="No">No</option><option value="Unknown">Unknown</option></select>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="glass card reveal" style="max-width: 500px; margin-top: -20px;">
+    <h2 class="handwritten">Your Details</h2>
+    <div class="person-card" style="margin-top: 10px;">
+        <h3>The Child (You)</h3>
+        <label>Select Sex</label>
+        <select id="userSex">
+            <option selected disabled>Select</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+        </select>
+    </div>
+</section>
+
+<section class="glass card reveal">
+    <h2 class="handwritten">Pedigree Analysis Diagram</h2>
+    <div class="pedigree-placeholder">
+        [ Pedigree Visualizer Area ]
+    </div>
+</section>
+
+<section class="glass card reveal">
+    <h2 class="handwritten">Your Risk Calculation</h2>
+    <div class="risk-content">
+        <button id="calculateBtn" class="glass-button">Calculate Risk</button>
+        <p id="riskText" style="margin-top:15px; opacity: 0.9;">
+            Click to analyze family history.
+        </p>
+    </div>
+</section>
+
+<footer class="reveal">
+    <p>This tool is for educational purposes only and does not substitute professional medical or genetic counseling.</p>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>
