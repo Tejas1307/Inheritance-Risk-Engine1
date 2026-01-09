@@ -1,334 +1,226 @@
-document.addEventListener("DOMContentLoaded", () => {
-
-    /* =========================
-       1. ANIMATION OBSERVER (RESET LOGIC)
-    ========================= */
-    const reveals = document.querySelectorAll(".reveal");
-
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add("active");
-            } else {
-                entry.target.classList.remove("active");
-            }
-        });
-    }, {
-        threshold: 0.1,
-        rootMargin: "0px 0px -50px 0px"
-    });
-
-    reveals.forEach(el => observer.observe(el));
-
-
-    /* =========================
-       2. DISEASE DATABASE (Full List)
-    ========================= */
-    const diseaseDatabase = {
-        // --- AUTOSOMAL RECESSIVE ---
-        "Cystic Fibrosis": {
-            inheritance: "Autosomal Recessive",
-            features: ["Mutation in CFTR gene affecting salt/water balance", "Buildup of thick, sticky mucus in organs"],
-            symptoms: ["Persistent cough", "Lung infections", "Salty-tasting skin", "Poor growth"]
-        },
-        "Sickle Cell Anemia": {
-            inheritance: "Autosomal Recessive",
-            features: ["Abnormal hemoglobin causes sickle-shaped red blood cells", "Blockage of blood flow causing pain"],
-            symptoms: ["Chronic anemia", "Pain crises", "Fatigue", "Swelling of hands/feet"]
-        },
-        "Thalassemia": {
-            inheritance: "Autosomal Recessive",
-            features: ["Reduced production of hemoglobin", "Destruction of red blood cells"],
-            symptoms: ["Pale skin", "Weakness", "Bone deformities", "Dark urine"]
-        },
-        "Tay-Sachs Disease": {
-            inheritance: "Autosomal Recessive",
-            features: ["Absence of enzyme Hex-A", "Accumulation of lipids in the brain"],
-            symptoms: ["Loss of motor skills", "Seizures", "Cherry-red spot in eye", "Muscle weakness"]
-        },
-        "Phenylketonuria (PKU)": {
-            inheritance: "Autosomal Recessive",
-            features: ["Inability to break down amino acid phenylalanine", "Requires strict dietary management"],
-            symptoms: ["Musty odor in breath", "Skin rashes (eczema)", "Developmental delays"]
-        },
-        "Spinal Muscular Atrophy": {
-            inheritance: "Autosomal Recessive",
-            features: ["Loss of motor neurons in spinal cord", "Muscle wasting due to SMN1 gene mutation"],
-            symptoms: ["Muscle weakness", "Difficulty swallowing", "Respiratory issues"]
-        },
-        "Galactosemia": {
-            inheritance: "Autosomal Recessive",
-            features: ["Inability to process galactose (sugar in milk)", "Toxic accumulation causing organ damage"],
-            symptoms: ["Jaundice", "Vomiting", "Poor weight gain", "Lethargy"]
-        },
-        "Wilson's Disease": {
-            inheritance: "Autosomal Recessive",
-            features: ["Accumulation of copper in liver and brain", "Defect in copper transport"],
-            symptoms: ["Tremors", "Difficulty speaking", "Abdominal pain", "Golden-brown eye ring"]
-        },
-        "Gilbert Syndrome": {
-            inheritance: "Autosomal Recessive",
-            features: ["Liver doesn't process bilirubin properly", "Usually a mild condition"],
-            symptoms: ["Mild jaundice (yellowing of eyes)", "Fatigue", "Abdominal discomfort"]
-        },
-
-        // --- AUTOSOMAL DOMINANT ---
-        "Huntington Disease": {
-            inheritance: "Autosomal Dominant",
-            features: ["Progressive breakdown of nerve cells in the brain", "Onset typically in 30s or 40s"],
-            symptoms: ["Chorea (involuntary movements)", "Cognitive decline", "Mood swings"]
-        },
-        "Marfan Syndrome": {
-            inheritance: "Autosomal Dominant",
-            features: ["Connective tissue disorder affecting heart, eyes, skeleton", "Mutation in FBN1 gene"],
-            symptoms: ["Tall and thin build", "Long arms/fingers", "Heart murmurs", "Curved spine"]
-        },
-        "Achondroplasia": {
-            inheritance: "Autosomal Dominant",
-            features: ["Most common form of dwarfism", "Problem with converting cartilage to bone"],
-            symptoms: ["Short stature", "Shortened limbs", "Large head size", "Normal intelligence"]
-        },
-        "Neurofibromatosis Type 1": {
-            inheritance: "Autosomal Dominant",
-            features: ["Changes in skin coloring", "Growth of tumors along nerves"],
-            symptoms: ["Café-au-lait spots", "Soft bumps on or under skin", "Bone deformities"]
-        },
-        "ADPKD": {
-            inheritance: "Autosomal Dominant",
-            features: ["Clusters of cysts develop in kidneys", "Kidneys enlarge and lose function"],
-            symptoms: ["High blood pressure", "Back or side pain", "Headaches", "Kidney stones"]
-        },
-        "Familial Hypercholesterolemia": {
-            inheritance: "Autosomal Dominant",
-            features: ["Body unable to remove LDL (bad) cholesterol", "High risk of early heart disease"],
-            symptoms: ["Chest pain", "Fatty deposits around eyes/tendons", "Sudden stroke/heart attack"]
-        },
-
-        // --- X-LINKED RECESSIVE ---
-        "Hemophilia": {
-            inheritance: "X-Linked Recessive",
-            features: ["Blood fails to clot normally", "Deficiency in clotting factor VIII or IX"],
-            symptoms: ["Excessive bleeding from cuts", "Large or deep bruises", "Joint pain/swelling"]
-        },
-        "Color Blindness": {
-            inheritance: "X-Linked Recessive",
-            features: ["Difficulty distinguishing certain colors (Red-Green)", "Cone cells in retina are deficient"],
-            symptoms: ["Inability to see shades of red and green", "Eye strain"]
-        },
-        "Duchenne Muscular Dystrophy": {
-            inheritance: "X-Linked Recessive",
-            features: ["Lack of dystrophin protein", "Rapid progressive muscle degeneration"],
-            symptoms: ["Frequent falls", "Trouble running/jumping", "Large calf muscles", "Learning disabilities"]
-        },
-        "Becker Muscular Dystrophy": {
-            inheritance: "X-Linked Recessive",
-            features: ["Similar to Duchenne but milder", "Partial function of dystrophin protein"],
-            symptoms: ["Muscle weakness (hips/pelvis)", "Walking on toes", "Muscle cramps"]
-        },
-        "G6PD Deficiency": {
-            inheritance: "X-Linked Recessive",
-            features: ["Red blood cells break down when exposed to triggers", "Enzyme deficiency"],
-            symptoms: ["Paleness", "Jaundice", "Dark urine", "Fatigue"]
-        },
-
-        // --- X-LINKED DOMINANT ---
-        "Rett Syndrome": {
-            inheritance: "X-Linked Dominant",
-            features: ["Rare genetic neurological disorder", "Affects mostly females (lethal in males)"],
-            symptoms: ["Loss of hand movements", "Loss of speech", "Balance issues", "Breathing problems"]
-        },
-        "Fragile X Syndrome": {
-            inheritance: "X-Linked Dominant",
-            features: ["Mutation in FMR1 gene", "Most common cause of inherited intellectual disability"],
-            symptoms: ["Learning disabilities", "Social anxiety", "Long face", "Large ears"]
-        },
-        "Hypophosphatemic Rickets": {
-            inheritance: "X-Linked Dominant",
-            features: ["Kidneys waste phosphorus", "Bones become soft and bend"],
-            symptoms: ["Bowed legs", "Bone pain", "Short stature", "Dental abscesses"]
-        },
-
-        // --- MITOCHONDRIAL ---
-        "Leber's Hereditary Optic Neuropathy": {
-            inheritance: "Mitochondrial",
-            features: ["Maternally inherited", "Death of cells in the optic nerve"],
-            symptoms: ["Sudden vision loss", "Blurring of central vision", "Tremors"]
-        },
-        "MELAS Syndrome": {
-            inheritance: "Mitochondrial",
-            features: ["Mitochondrial Encephalomyopathy", "Lactic Acidosis and Stroke-like episodes"],
-            symptoms: ["Muscle weakness", "Recurrent headaches", "Seizures", "Vomiting"]
-        },
-        "MERRF Syndrome": {
-            inheritance: "Mitochondrial",
-            features: ["Myoclonic Epilepsy with Ragged Red Fibers", "Defect in mitochondrial DNA"],
-            symptoms: ["Muscle twitches", "Seizures", "Coordination problems", "Hearing loss"]
-        }
-    };
-
-
-    /* =========================
-       3. SELECTION LOGIC (Auto-Scroll)
-    ========================= */
-    const diseaseSelect = document.querySelector(".main-select");
-    const overviewSection = document.getElementById("diseaseOverview");
-    const diseaseTitle = document.getElementById("diseaseTitle");
-    const inheritanceTag = document.getElementById("inheritanceTag");
-    const featuresList = document.getElementById("featuresList");
-    const symptomsList = document.getElementById("symptomsList");
-
-    if (diseaseSelect) {
-        diseaseSelect.addEventListener("change", (e) => {
-            const selectedDisease = e.target.value;
-            const data = diseaseDatabase[selectedDisease];
-
-            if (data) {
-                diseaseTitle.textContent = selectedDisease;
-                inheritanceTag.textContent = data.inheritance;
-                
-                featuresList.innerHTML = "";
-                data.features.forEach(f => {
-                    const li = document.createElement("li");
-                    li.textContent = f;
-                    featuresList.appendChild(li);
-                });
-
-                symptomsList.innerHTML = "";
-                data.symptoms.forEach(s => {
-                    const li = document.createElement("li");
-                    li.textContent = s;
-                    symptomsList.appendChild(li);
-                });
-
-                overviewSection.classList.remove("hidden-section");
-                
-                overviewSection.classList.remove("active-overview");
-                void overviewSection.offsetWidth; 
-                overviewSection.classList.add("active-overview");
-
-                overviewSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }
-        });
-    }
-
-
-    /* =========================
-       4. CONDITIONAL CARRIER LOGIC
-    ========================= */
-    document.addEventListener("change", (e) => {
-        const statusSelect = e.target;
-        if (!statusSelect.matches("select[data-status]")) return;
-
-        const personCard = statusSelect.closest(".person-card");
-        if (!personCard) return;
-
-        const conditionalBlock = personCard.querySelector(".conditional");
-        const carrierSelect = conditionalBlock ? conditionalBlock.querySelector("select") : null;
-
-        if (!conditionalBlock || !carrierSelect) return;
-
-        const statusValue = statusSelect.value;
-
-        if (statusValue === "Non-affected") {
-            conditionalBlock.classList.remove("hidden");
-        } else {
-            conditionalBlock.classList.add("hidden");
-            if (statusValue === "Affected") carrierSelect.value = "Yes";
-            else if (statusValue === "Unknown") carrierSelect.value = "Unknown";
-        }
-    });
-
-});
+/* =========================
+   GLOBAL RESET
+========================= */
+* { box-sizing: border-box; }
+html, body { margin: 0; min-height: 100%; }
 
 /* =========================
-   5. CALCULATE RISK BUTTON - READS ACTUAL FORM VALUES
+   VIDEO BACKGROUND SETUP
 ========================= */
-document.getElementById("calculateBtn").addEventListener("click", () => {
-    // Helper function to get person data from a card
-    function getPersonData(personCard, defaultSex) {
-        const statusSelect = personCard.querySelector("select[data-status]");
-        const carrierSelect = personCard.querySelector(".conditional select");
-        
-        const status = statusSelect.value;
-        const affected = status === "Affected";
-        
-        let carrier_status = "unknown";
-        if (status === "Affected") {
-            carrier_status = "known_carrier";
-        } else if (status === "Non-affected" && carrierSelect) {
-            const carrierValue = carrierSelect.value;
-            if (carrierValue === "Yes") carrier_status = "known_carrier";
-            else if (carrierValue === "No") carrier_status = "known_non_carrier";
-            else carrier_status = "unknown";
-        }
-        
-        return {
-            sex: defaultSex,
-            affected: affected,
-            carrier_status: carrier_status
-        };
-    }
+body {
+    font-family: 'Inter', sans-serif;
+    color: #eef2ff;
+    overflow-x: hidden;
+    background: #0f172a; 
+}
+
+#bg-video {
+    position: fixed;
+    right: 0; bottom: 0;
+    min-width: 100%; min-height: 100%;
+    width: auto; height: auto;
+    z-index: -10;
+    object-fit: cover;
+    /* Forces GPU for smoother scrolling */
+    transform: translateZ(0);
+}
+
+.video-overlay {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    z-index: -9;
+    /* Dark tint to ensure white text is readable over the bright DNA */
+    background: rgba(15, 23, 42, 0.65); 
+}
+
+/* =========================
+   HEADER
+========================= */
+.header { margin: 30px; padding: 30px; text-align: center; }
+
+.handwritten { 
+    font-family: 'Patrick Hand', cursive; 
+    font-size: 2.8rem; 
+    color: #ffffff;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+}
+
+.subtitle { margin-top: 8px; opacity: 0.9; color: #cbd5e1; }
+
+/* =========================
+   PREMIUM GLASS AESTHETIC
+========================= */
+/* Main Container Card */
+.glass {
+    /* Highly transparent white tint */
+    background: rgba(255, 255, 255, 0.08);
     
-    // Get all person cards in order
-    const grandparentCards = document.querySelectorAll(".side-by-side .notebook:first-child .person-card");
-    const parentCards = document.querySelectorAll(".side-by-side .notebook:last-child .person-card");
+    /* The "Frosted" Effect (16px is a good balance of looks vs speed) */
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
     
-    // Build grandparents array [Pat GF, Pat GM, Mat GF, Mat GM]
-    const grandparents = [
-        getPersonData(grandparentCards[0], "M"), // Paternal Grandfather
-        getPersonData(grandparentCards[1], "F"), // Paternal Grandmother
-        getPersonData(grandparentCards[2], "M"), // Maternal Grandfather
-        getPersonData(grandparentCards[3], "F")  // Maternal Grandmother
-    ];
+    border-radius: 24px;
     
-    // Build parents array [Father, Mother]
-    const parents = [
-        getPersonData(parentCards[0], "M"), // Father
-        getPersonData(parentCards[1], "F")  // Mother
-    ];
+    /* Crisp white border to define edges */
+    border: 1px solid rgba(255, 255, 255, 0.15);
     
-    // Get user sex and convert to backend format
-    const userSexSelect = document.getElementById("userSex");
-    const userSexValue = userSexSelect.value;
-    const userSex = userSexValue === "Male" ? "M" : "F";
+    /* Soft shadow to lift it off the video */
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+}
+
+/* Inner Tiles (Person Cards & Notebooks) */
+.notebook, .person-card { 
+    /* Even more transparent to show layering */
+    background: rgba(255, 255, 255, 0.05);
     
-    // Get selected disease
-    const disease = document.querySelector(".main-select").value;
+    /* Lighter blur for depth */
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
     
-    // Validate inputs
-    if (!disease || disease === "Select disease") {
-        alert("Please select a disease first!");
-        return;
-    }
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #f1f5f9; 
+    border-radius: 16px;
+    padding: 24px;
+    margin-top: 22px;
     
-    if (!userSexValue || userSexValue === "Select") {
-        alert("Please select your sex!");
-        return;
-    }
+    transition: transform 0.3s ease, background 0.3s ease, border 0.3s ease;
+}
+
+/* Hover Effect: Lights up slightly */
+.person-card:hover { 
+    transform: translateY(-4px); 
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.3);
+    box-shadow: 0 10px 20px -5px rgba(0,0,0,0.2);
+}
+
+/* =========================
+   LAYOUT
+========================= */
+.card { max-width: 950px; margin: 60px auto; padding: 40px; }
+.side-by-side { display: grid; grid-template-columns: 1fr 1fr; gap: 50px; max-width: 1200px; margin: 60px auto; padding: 0 30px; }
+.parents-wide { max-width: none; }
+.grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 26px; }
+.info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
+
+.card h3 { 
+    font-family: 'Patrick Hand', cursive; 
+    font-size: 1.6rem; margin: 0 0 12px; color: #ffffff; 
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+/* =========================
+   FORMS (Glass Style)
+========================= */
+select {
+    width: 100%; padding: 12px 14px; margin-top: 6px;
+    border-radius: 10px; 
     
-    const payload = {
-        disease: disease,
-        grandparents: grandparents,
-        parents: parents,
-        user_sex: userSex
-    };
+    /* Glassy border */
+    border: 1px solid rgba(255, 255, 255, 0.25);
     
-    console.log("Sending payload:", payload); // Debug log
+    /* Semi-transparent dark background for readability */
+    background: rgba(0, 0, 0, 0.25); 
     
-    fetch("/calculate", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
-    })
-    .then(res => res.json())
-    .then(data => {
-        console.log("Received response:", data); // Debug log
-        document.getElementById("riskText").innerHTML =
-            `<strong>Risk: ${(data.risk * 100).toFixed(1)}%</strong><br>${data.explanation}`;
-    })
-    .catch(error => {
-        console.error("Error:", error);
-        document.getElementById("riskText").innerHTML =
-            `<strong style="color: #ef4444;">Error calculating risk. Please check console.</strong>`;
-    });
-});
+    font-size: 14px; color: #ffffff;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+/* Options must be solid color (browser limitation) */
+select option { background: #1e293b; color: #ffffff; }
+
+select:hover { 
+    background: rgba(0, 0, 0, 0.4); 
+    border-color: rgba(255, 255, 255, 0.5); 
+}
+select:focus { outline: none; border-color: #818cf8; box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.2); }
+
+optgroup { font-weight: 700; color: #94a3b8; background: #0f172a;}
+
+label { 
+    display: block; font-size: 13px; margin-top: 10px; 
+    color: #e2e8f0; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; 
+    text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+}
+
+/* =========================
+   BUTTONS
+========================= */
+.glass-button {
+    padding: 12px 28px;
+    
+    /* Glassy Indigo Button */
+    background: rgba(79, 70, 229, 0.4); 
+    border: 1px solid rgba(165, 180, 252, 0.3);
+    backdrop-filter: blur(4px);
+    
+    border-radius: 12px;
+    color: #ffffff;
+    font-size: 1rem; font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(79, 70, 229, 0.3);
+}
+.glass-button:hover { 
+    background: rgba(79, 70, 229, 0.6); 
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(79, 70, 229, 0.5);
+}
+
+/* =========================
+   ANIMATIONS
+========================= */
+.reveal {
+    opacity: 0; 
+    transform: translateY(30px);
+    /* Removed filter blur transition to keep scrolling smooth */
+    transition: opacity 0.6s cubic-bezier(0.2, 0.8, 0.2, 1), transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.reveal.active { opacity: 1; transform: translateY(0); }
+
+.slide-left { transform: translateX(-30px); }
+.slide-right { transform: translateX(30px); }
+.slide-left.active, .slide-right.active { transform: translateX(0); }
+
+/* Interior Stagger */
+.hidden-section { display: none; }
+.stagger-1, .stagger-2, .stagger-3, .stagger-4 {
+    opacity: 0; transform: translateY(15px);
+    transition: all 0.6s ease-out;
+}
+.active-overview .stagger-1 { opacity: 1; transform: translateY(0); transition-delay: 0.1s; }
+.active-overview .stagger-2 { opacity: 1; transform: translateY(0); transition-delay: 0.2s; }
+.active-overview .stagger-3 { opacity: 1; transform: translateY(0); transition-delay: 0.3s; }
+.active-overview .stagger-4 { opacity: 1; transform: translateY(0); transition-delay: 0.4s; }
+
+.inheritance-tag {
+    display: inline-block; background: rgba(255, 255, 255, 0.2);
+    padding: 6px 14px; border-radius: 50px; font-size: 0.9rem;
+    font-weight: 600; border: 1px solid rgba(255,255,255,0.3); margin-bottom: 20px;
+    backdrop-filter: blur(5px);
+}
+
+.conditional.hidden { display: none !important; }
+.conditional { margin-top: 12px; animation: softFade 0.3s ease-out; }
+@keyframes softFade { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+
+/* =========================
+   FOOTER & RESPONSIVE
+========================= */
+footer { text-align: center; margin: 80px 0 40px; opacity: 0.7; font-size: 0.9rem; color: #cbd5e1; }
+
+.image-placeholder, .pedigree-placeholder, .risk-content {
+    min-height: 180px; margin-top: 20px; border-radius: 16px;
+    background: rgba(255,255,255,0.03); 
+    border: 2px dashed rgba(255,255,255,0.2);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.1rem; letter-spacing: 0.5px; flex-direction: column;
+}
+
+@media (max-width: 900px) {
+    .side-by-side, .grid-2, .info-grid { grid-template-columns: 1fr; }
+    .card { margin: 30px 20px; padding: 25px; }
+    /* On mobile, use less blur to keep it fast */
+    .glass { backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+}
