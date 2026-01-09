@@ -9,7 +9,7 @@
 <body>
 
 <video autoplay muted loop playsinline id="bg-video">
-    <script src="{{ url_for('static', filename='script.js') }}"></script>
+    <source src="{{ url_for('static', filename='background.mp4') }}" type="video/mp4">
     Your browser does not support the video tag.
 </video>
 
@@ -37,7 +37,7 @@
             <option value="Phenylketonuria (PKU)">Phenylketonuria (PKU)</option>
             <option value="Spinal Muscular Atrophy">Spinal Muscular Atrophy</option>
             <option value="Galactosemia">Galactosemia</option>
-            <option value="Wilson’s Disease">Wilson’s Disease</option>
+            <option value="Wilson's Disease">Wilson's Disease</option>
             <option value="Gilbert Syndrome">Gilbert Syndrome</option>
         </optgroup>
 
@@ -65,7 +65,7 @@
         </optgroup>
 
         <optgroup label="Mitochondrial">
-            <option value="Leber’s Hereditary Optic Neuropathy">Leber’s Hereditary Optic Neuropathy</option>
+            <option value="Leber's Hereditary Optic Neuropathy">Leber's Hereditary Optic Neuropathy</option>
             <option value="MELAS Syndrome">MELAS Syndrome</option>
             <option value="MERRF Syndrome">MERRF Syndrome</option>
         </optgroup>
@@ -109,7 +109,7 @@
                     <option selected disabled>Select status</option>
                     <option value="Affected">Affected</option>
                     <option value="Non-affected">Non-affected</option>
-                    <option value="Unknown">Unknown</option>
+                   
                 </select>
                 <div class="conditional hidden">
                     <label>Carrier Status</label>
@@ -125,7 +125,7 @@
                     <option selected disabled>Select status</option>
                     <option value="Affected">Affected</option>
                     <option value="Non-affected">Non-affected</option>
-                    <option value="Unknown">Unknown</option>
+                    
                 </select>
                 <div class="conditional hidden">
                     <label>Carrier Status</label>
@@ -141,7 +141,7 @@
                     <option selected disabled>Select status</option>
                     <option value="Affected">Affected</option>
                     <option value="Non-affected">Non-affected</option>
-                    <option value="Unknown">Unknown</option>
+                    
                 </select>
                 <div class="conditional hidden">
                     <label>Carrier Status</label>
@@ -157,7 +157,7 @@
                     <option selected disabled>Select status</option>
                     <option value="Affected">Affected</option>
                     <option value="Non-affected">Non-affected</option>
-                    <option value="Unknown">Unknown</option>
+                   
                 </select>
                 <div class="conditional hidden">
                     <label>Carrier Status</label>
@@ -239,9 +239,8 @@
     <p>This tool is for educational purposes only and does not substitute professional medical or genetic counseling.</p>
 </footer>
 
-<video autoplay muted loop playsinline id="bg-video">
-    <source src="{{ url_for('static', filename='background.mp4') }}" type="video/mp4">
-</video>
-</body>
+<!-- Script should be at the end of body, AFTER all HTML elements -->
+<script src="{{ url_for('static', filename='script.js') }}"></script>
 
+</body>
 </html>
