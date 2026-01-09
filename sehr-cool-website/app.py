@@ -129,68 +129,68 @@ def calculate():
 if __name__=="__main__":
     app.run(debug=True)
 
-from flask import Flask, request, jsonify
-from flask_cors import CORS
+# from flask import Flask, request, jsonify
+# from flask_cors import CORS
 
-app = Flask(__name__)
-CORS(app)
+# app = Flask(__name__)
+# CORS(app)
 
-# -----------------------------------------
-# Carrier inference from grandparents
-# -----------------------------------------
-def infer_parent_carrier(grandfather, grandmother):
-    # Autosomal recessive assumptions
-    if grandfather["status"] == "affected" or grandmother["status"] == "affected":
-        return 1.0
-    if grandfather["status"] == "carrier" or grandmother["status"] == "carrier":
-        return 0.5
-    return 0.25  # both unaffected
-
-
-def parent_carrier_probability(status, grandfather, grandmother):
-    if status == "affected":
-        return 1.0
-    if status == "carrier":
-        return 1.0
-    if status == "unaffected":
-        return 0.0
-    return infer_parent_carrier(grandfather, grandmother)
+# # -----------------------------------------
+# # Carrier inference from grandparents
+# # -----------------------------------------
+# def infer_parent_carrier(grandfather, grandmother):
+#     # Autosomal recessive assumptions
+#     if grandfather["status"] == "affected" or grandmother["status"] == "affected":
+#         return 1.0
+#     if grandfather["status"] == "carrier" or grandmother["status"] == "carrier":
+#         return 0.5
+#     return 0.25  # both unaffected
 
 
-# -----------------------------------------
-# API
-# -----------------------------------------
-@app.route("/calculate", methods=["POST"])
-def calculate():
-    data = request.json
-
-    maternal = data["grandparents"]["maternal"]
-    paternal = data["grandparents"]["paternal"]
-
-    mother_status = data["parents"]["mother"]["status"]
-    father_status = data["parents"]["father"]["status"]
-
-    mother_prob = parent_carrier_probability(
-        mother_status,
-        maternal["grandfather"],
-        maternal["grandmother"]
-    )
-
-    father_prob = parent_carrier_probability(
-        father_status,
-        paternal["grandfather"],
-        paternal["grandmother"]
-    )
-
-    # Autosomal recessive child risk
-    child_risk = mother_prob * father_prob * 0.25 * 100
-
-    return jsonify({
-        "mother_carrier_probability": mother_prob,
-        "father_carrier_probability": father_prob,
-        "child_risk_percent": round(child_risk, 2)
-    })
+# def parent_carrier_probability(status, grandfather, grandmother):
+#     if status == "affected":
+#         return 1.0
+#     if status == "carrier":
+#         return 1.0
+#     if status == "unaffected":
+#         return 0.0
+#     return infer_parent_carrier(grandfather, grandmother)
 
 
-if __name__ == "__main__":
-    app.run(debug=True)
+# # -----------------------------------------
+# # API
+# # -----------------------------------------
+# @app.route("/calculate", methods=["POST"])
+# def calculate():
+#     data = request.json
+
+#     maternal = data["grandparents"]["maternal"]
+#     paternal = data["grandparents"]["paternal"]
+
+#     mother_status = data["parents"]["mother"]["status"]
+#     father_status = data["parents"]["father"]["status"]
+
+#     mother_prob = parent_carrier_probability(
+#         mother_status,
+#         maternal["grandfather"],
+#         maternal["grandmother"]
+#     )
+
+#     father_prob = parent_carrier_probability(
+#         father_status,
+#         paternal["grandfather"],
+#         paternal["grandmother"]
+#     )
+
+#     # Autosomal recessive child risk
+#     child_risk = mother_prob * father_prob * 0.25 * 100
+
+#     return jsonify({
+#         "mother_carrier_probability": mother_prob,
+#         "father_carrier_probability": father_prob,
+#         "child_risk_percent": round(child_risk, 2)
+#     })
+
+
+# if __name__ == "__main__":
+#     app.run(debug=True)
